@@ -33,6 +33,11 @@ class CustomAdapter extends BaseAdapter {
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
     }
 
+    public void changeState(Integer i, Boolean state) {
+        boolData.set(i, state);
+    }
+
+
     public void addItem(final String item) {
         mData.add(item);
         boolData.add(false);
@@ -88,8 +93,6 @@ class CustomAdapter extends BaseAdapter {
         return mData.get(position);
     }
 
-    public Boolean getItemState(int pos) {return boolData.get(pos);}
-
     @Override
     public long getItemId(int position) {
         return position;
@@ -108,9 +111,9 @@ class CustomAdapter extends BaseAdapter {
                     holder.checkBox = (CheckBox) convertView.findViewById(R.id.cb);
                     holder.checkBox.setChecked(boolData.get(position));
                     if(holder.checkBox.isChecked()){
-                        holder.textView.setPaintFlags(holder.textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                        holder.checkBox.setPaintFlags(holder.textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
                     }else{
-                        holder.textView.setPaintFlags(0);
+                        holder.checkBox.setPaintFlags(0);
                     }
                     break;
                 case TYPE_SEPARATOR:
@@ -122,8 +125,20 @@ class CustomAdapter extends BaseAdapter {
         } else {
             holder = (ViewHolder) convertView.getTag();
         }
-        holder.textView.setText(mData.get(position));
-       // holder.checkBox.setChecked(true);
+        switch (rowType) {
+            case TYPE_ITEM:
+                holder.checkBox.setText(mData.get(position));
+                holder.checkBox.setChecked(boolData.get(position));
+                if(holder.checkBox.isChecked()){
+                    holder.checkBox.setPaintFlags(holder.textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+                }else{
+                    holder.checkBox.setPaintFlags(0);
+                }
+                break;
+            case TYPE_SEPARATOR:
+                holder.textView.setText(mData.get(position));
+                break;}
+        holder.id = position;
         return convertView;
     }
 
@@ -150,6 +165,7 @@ class CustomAdapter extends BaseAdapter {
     public static class ViewHolder {
         public TextView textView;
         public CheckBox checkBox;
+        Integer id;
 
         public ViewHolder()
         {
@@ -160,27 +176,6 @@ class CustomAdapter extends BaseAdapter {
             this.checkBox = checkBox;
             this.textView = textView;
         }
-
-        public CheckBox getCheckBox()
-        {
-            return checkBox;
-        }
-
-        public void setCheckBox(CheckBox checkBox)
-        {
-            this.checkBox = checkBox;
-        }
-
-        public TextView getTextView()
-        {
-            return textView;
-        }
-
-        public void setTextView(TextView textView)
-        {
-            this.textView = textView;
-        }
-
 
     }
 

@@ -19,7 +19,6 @@ public class Page {
 
     public Integer getTodoId(String text){
         for(int i = 0; i < Projects.size(); i++){
-
             Project proj = Projects.get(i);
             for(int j=0; j < proj.todos.size(); j++){
                 if(proj.todos.get(j).text == text){
@@ -28,25 +27,5 @@ public class Page {
             }
         }
         return -1;
-    }
-
-    public Integer getLastTodoId(){
-        Integer lastId = -1;
-        for(int i = 0; i < Projects.size(); i++){
-            Project proj = Projects.get(i);
-            for(int j=0; j < proj.todos.size(); j++){
-                if(proj.todos.get(j).id > lastId){ lastId = proj.todos.get(j).id;}
-            }
-        }
-        return lastId;
-    }
-
-    public void addTodo(String text, int project_id, Boolean isCompleted){
-        Project proj = Projects.get(project_id);
-        Todo newTodo = new Todo();
-        newTodo.text = text;
-        newTodo.id = getLastTodoId();
-        newTodo.isCompleted = isCompleted;
-        proj.todos.add(newTodo);
     }
 }

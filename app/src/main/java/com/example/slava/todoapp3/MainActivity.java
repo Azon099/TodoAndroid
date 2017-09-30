@@ -12,10 +12,12 @@ TODO:
  */
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.graphics.Paint;
 import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.media.session.PlaybackStateCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.view.Menu;
@@ -54,6 +56,8 @@ public class MainActivity extends AppCompatActivity {
                 .setFontAttrId(R.attr.fontPath)
                 .build()
         );
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+        mAdapter = new CustomAdapter(this);
         startRefresh();
         FloatingActionButton ff = (FloatingActionButton) findViewById(R.id.refresh);
         ff.setOnClickListener(new View.OnClickListener() {//Кнопка обновления всего и всея
@@ -82,16 +86,14 @@ public class MainActivity extends AppCompatActivity {
         mainPage.clearAll();
         mAdapter.clearAdapter();
         lvMain.setAdapter(mAdapter);
-        res = null;
         startRefresh();
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        startRefresh();
+        reloadAll();
     }
 
-    JsonObject res;
     public void startRefresh(){//Тут магия *_*
         Ion.with(this)
                 .load(mainURL + "/todo_controller/mobileAppGet")
@@ -100,8 +102,7 @@ public class MainActivity extends AppCompatActivity {
                     @Override
                     public void onCompleted(Exception e, JsonObject result) {
                         if(result != null) {
-                            res = result;
-                            parseJson();
+                            parseJson(result);
                         }else{
                         //    tv.setText(e.getMessage());
                         }
@@ -110,7 +111,7 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void parseJson(){//Это однозначно одна из величайших ошибок допущенных мною, но оно работает.
+    public void parseJson(JsonObject res){//Это однозначно одна из величайших ошибок допущенных мною, но оно работает.
         //Не лучшее решение но сил уюе нету ....
         JsonArray projects = res.getAsJsonArray("Projects");
            mainPage.clearAll();
@@ -142,17 +143,18 @@ public class MainActivity extends AppCompatActivity {
         //tv.setText("GOODJOB");
         refreshList();
     }
+
     public void checkBoxClick(View view){//Тонна быдлокода
         //tv.setText("YYYYYYYEEEEAHHHHH");
         View row = (View) view.getParent();
         CustomAdapter.ViewHolder vHold = (CustomAdapter.ViewHolder) row.getTag();
+        mAdapter.changeState(vHold.id, vHold.checkBox.isChecked());
         if(vHold.checkBox.isChecked()){
-            vHold.textView.setPaintFlags(vHold.textView.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
+            vHold.checkBox.setPaintFlags(vHold.checkBox.getPaintFlags() | Paint.STRIKE_THRU_TEXT_FLAG);
         }else{
-            vHold.textView.setPaintFlags(0);
+            vHold.checkBox.setPaintFlags(0);
         }
-
-        String rowText = vHold.textView.getText().toString();
+        String rowText = vHold.checkBox.getText().toString();
         String url = mainURL+"/todos/";
         String query = Uri.encode(String.valueOf(mainPage.getTodoId(rowText)) + "|" + vHold.checkBox.isChecked());
         downloadUrl(url + query);
@@ -196,13 +198,11 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public void refreshList(){//Выглядит неплохо, но есть чувство, что можно лучше :(
-        if (mAdapter == null){
-            mAdapter = new CustomAdapter(this);
-        }
         lvMain = (ListView) findViewById(R.id.lvMain);
         for (int i = 0; i < mainPage.Projects.size(); i++){
             Project proj = mainPage.Projects.get(i);
             mAdapter.addSectionHeaderItem(proj.title);
+            proj.title = proj.title;
             for (int j = 0; j < proj.todos.size(); j++){
                 Todo todo = proj.todos.get(j);
                 mAdapter.addItem(todo.text, todo.isCompleted);
@@ -221,11 +221,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
-
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
         return super.onOptionsItemSelected(item);
     }
 

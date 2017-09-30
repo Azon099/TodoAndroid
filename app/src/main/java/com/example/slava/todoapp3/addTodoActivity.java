@@ -4,6 +4,7 @@ package com.example.slava.todoapp3;
 import android.content.Context;
 
 import android.content.Intent;
+import android.content.pm.ActivityInfo;
 import android.net.Uri;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -35,6 +36,7 @@ public class addTodoActivity extends AppCompatActivity {
         //Плохой, но рабочий вариант.
         ArrayList<String> Projects = getIntent().getStringArrayListExtra("Projects");
         todoText = (EditText) findViewById(R.id.textTodo);
+        setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, Projects);
         adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
@@ -61,7 +63,6 @@ public class addTodoActivity extends AppCompatActivity {
         intent.putExtra("newTodo", (ArrayList<String>) str);
         setResult(RESULT_OK, intent);
         //tv.setText("Done");
-        finish();
     }
 
     private void downloadUrl(final String urlString) {
@@ -76,6 +77,7 @@ public class addTodoActivity extends AppCompatActivity {
                     public void run()
                     {
                         //update ui
+                        finish();
                     }
                 });
             }
