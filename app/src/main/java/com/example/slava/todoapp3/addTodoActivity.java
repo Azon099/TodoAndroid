@@ -27,7 +27,7 @@ import uk.co.chrisjenx.calligraphy.CalligraphyContextWrapper;
 public class addTodoActivity extends AppCompatActivity {
     Spinner spinner;
     EditText todoText;
-
+    String mainURL = "http://secondtodoapp.herokuapp.com";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -51,7 +51,7 @@ public class addTodoActivity extends AppCompatActivity {
 //Как и в прошлый раз, не без магии, но тут она явно рангом ниже
     public void acceptTodo(View v){
         Integer index= spinner.getSelectedItemPosition();
-        String url = "http://10.0.2.2:3000/todos/add/";
+        String url = mainURL+"/todos/add/";
         String query = Uri.encode(String.valueOf(index + 1) + "|" + todoText.getText());
         downloadUrl(url + query);
         List<String> str = new ArrayList<String>();

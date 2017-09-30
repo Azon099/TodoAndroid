@@ -43,6 +43,7 @@ public class MainActivity extends AppCompatActivity {
     ListView lvMain;
     private CustomAdapter mAdapter;
     public Page mainPage = new Page();
+    String mainURL = "http://secondtodoapp.herokuapp.com";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +94,7 @@ public class MainActivity extends AppCompatActivity {
     JsonObject res;
     public void startRefresh(){//Тут магия *_*
         Ion.with(this)
-                .load("http://10.0.2.2:3000/todo_controller/mobileAppGet")
+                .load(mainURL + "/todo_controller/mobileAppGet")
                 .asJsonObject()
                 .setCallback(new FutureCallback<JsonObject>() {
                     @Override
@@ -152,7 +153,7 @@ public class MainActivity extends AppCompatActivity {
         }
 
         String rowText = vHold.textView.getText().toString();
-        String url = "http://10.0.2.2:3000/todos/";
+        String url = mainURL+"/todos/";
         String query = Uri.encode(String.valueOf(mainPage.getTodoId(rowText)) + "|" + vHold.checkBox.isChecked());
         downloadUrl(url + query);
     }
